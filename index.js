@@ -22,7 +22,10 @@ client.on('interactionCreate', async interaction => {
 		await interaction.reply('Pong!');
 	} else if (commandName === 'beep') {
 		await interaction.reply('Boop!');
+	} else if (commandName === 'server') {
+		await interaction.reply('This server sucks');
 	}
+	
 });
 
 // Login to Discord with your client's token
