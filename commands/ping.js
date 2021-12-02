@@ -1,11 +1,11 @@
-const { SlashCommandBuilder, channelMention } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName('ping')
-		.setDescription('Replies with Pong!')
-		.addUserOption(option => option.setName('target').setDescription('Select a user')),
+		.setName('startqueue')
+		.setDescription('Start the inhouse queue.')
+		.addStringOption(option => option.setName('time').setDescription('Enter the time the lobby will start.')),
 
 	async execute(interaction) {
 	const top = "<:Top_icon:916087719397036113>";
@@ -13,12 +13,11 @@ module.exports = {
 	const mid = "<:midicon:916087719749369856>";
 	const ADC = "<:adcicon:916087719095074827>";
 	const support = "<:supporticon:916087719413825637>";
-	const user = interaction.options.getUser('target');
-	console.log(user);
+	const string = interaction.options.getString('time');
 
 	const exampleEmbed = new MessageEmbed()
 		.setColor('#660066')
-		.setTitle(`Lobby created for ${user}`)
+		.setTitle(`Lobby created for ${string}.`)
 		.addField(top, '\u200B')
 		.addField(jungle, '\u200B')
 		.addField(mid, '\u200B')
