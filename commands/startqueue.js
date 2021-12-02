@@ -14,7 +14,7 @@ module.exports = {
 	const ADC = "<:adcicon:916087719095074827>";
 	const support = "<:supporticon:916087719413825637>";
 	const string = interaction.options.getString('time');
-
+	
 	const exampleEmbed = new MessageEmbed()
 		.setColor('#660066')
 		.setTitle(`Lobby created for ${string}.`)
@@ -25,5 +25,20 @@ module.exports = {
 		.addField(support, '\u200B')
 		.setFooter('Use !queue [role] to join or !leave to leave. | All non-queue messages will be deleted.');
 		await interaction.reply({ embeds: [exampleEmbed] });
+
+	const filter = m => m.content.includes('!queue');
+	const collector = interaction.channel.createMessageCollector({ filter });
+		
+	collector.on('collect', m => {
+		if(m.content.includes("top")) {
+			console.log("this worked")
+		} else
+		console.log(`Collected ${m.content}`);
+	});
+		
+	collector.on('end', collected => {
+		console.log(`Collected ${collected.size} items`);
+	});	
+
 	},
 };
