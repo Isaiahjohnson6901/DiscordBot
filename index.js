@@ -11,6 +11,10 @@ const client = new Client({
 	]
  });
 
+ module.exports = {
+    client
+};
+
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
@@ -22,26 +26,51 @@ for (const file of eventFiles) {
 	}
 }
 
-client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	client.commands.set(command.data.name, command);
-}
+const { MessageActionRow, MessageButton } = require('discord.js');
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
 
-	const command = client.commands.get(interaction.commandName);
+	if (interaction.commandName === 'ping') {
+		const row = new MessageActionRow()
+			.addComponents(
+				new MessageButton()
+					.setCustomId('primary')
+					.setLabel('Primary')
+					.setStyle('PRIMARY'),
+				new MessageButton()
+					.setCustomId("Jungle")
+					.setLabel("Jungle")
+					.setStyle('PRIMARY'),
+				new MessageButton()
+					.setCustomId("Mid")
+					.setLabel("Mid")
+					.setStyle('PRIMARY'),
+				new MessageButton()
+					.setCustomId("ADC")
+					.setLabel("ADC")
+					.setStyle('PRIMARY'),
+				new MessageButton()
+					.setCustomId("Support")
+					.setLabel("Support")
+					.setStyle('PRIMARY'),
+			);
 
-	if (!command) return;
-
-	try {
-		await command.execute(interaction);
-	} catch (error) {
-		console.error(error);
-		return interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+		await interaction.reply({ content: 'Pong!', components: [row] });
+	} else if (interaction.commandName === 'startqueue') {
+		const filter = (reaction, user) => {
+			return reaction.emoji.name === '👍' && user.id === message.author.id;
+		};
+		
+		const collector = message.createReactionCollector({ filter, time: 15000 });
+		
+		collector.on('collect', (reaction, user) => {
+			console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
+		});
+		
+		collector.on('end', collected => {
+			console.log(`Collected ${collected.size} items`);
+		});
 	}
 });
 
