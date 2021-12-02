@@ -23,7 +23,7 @@ client.on("interactionCreate", async interaction => {
 		console.log(interaction);
 		await interaction.reply('Pong');
 		await wait(2000);
-		await interaction.editReply("You clicked me loser");
+		awaitinteraction.editReply("You clicked me loser");
 		//interaction.reply({ content: `${interaction.user.tag} clicked me!`, ephemeral: true});
 	}
 

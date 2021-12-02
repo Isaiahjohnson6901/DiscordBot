@@ -1,9 +1,6 @@
 const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config.json');
-const { MessageEmbed } = require('discord.js');
-
-// Create a new client instance
 const client = new Client({ 
 	intents: [
 		Intents.FLAGS.GUILDS,
@@ -12,10 +9,41 @@ const client = new Client({
 	]
  });
 
+ 
+
+client.commands = new Collection();
+
+//Command Handler
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	client.commands.set(command.data.name, command);
+}
+
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isCommand()) return;
+
+	const command = client.commands.get(interaction.commandName);
+
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+	}
+});
+
+
+
  module.exports = {
     client
 };
 
+
+
+//Event Handler
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
@@ -27,72 +55,6 @@ for (const file of eventFiles) {
 	}
 }
 
-const { MessageActionRow, MessageButton } = require('discord.js');
 
-client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) 
-		return;
-
-	const { commandName } = interaction;
-	const exampleEmbed = new MessageEmbed().setTitle('Some title');
-	.setColor('#0099ff')
-	.setTitle('Some title')
-	.setURL('https://discord.js.org/')
-	.setAuthor('Some name', 'https://i.imgur.com/AfFp7pu.png', 'https://discord.js.org')
-	.setDescription('Some description here')
-	.setThumbnail('https://i.imgur.com/AfFp7pu.png')
-	.addFields(
-		{ name: 'Regular field title', value: 'Some value here' },
-		{ name: '\u200B', value: '\u200B' },
-		{ name: 'Inline field title', value: 'Some value here', inline: true },
-		{ name: 'Inline field title', value: 'Some value here', inline: true },
-	)
-
-	channel.send({ embeds: [exampleEmbed] });
-
-	if (interaction.commandName === 'startqueue') {
-		await interaction.reply("Type <role> <IGN> to be added to the queue.")
-		const filter = m => m.content.includes('discord');
-		const collector = interaction.channel.createMessageCollector({ time: 15000 });
-	
-		
-		collector.on('collect', m => {
-			console.log(`Collected ${m.content}`);
-		});
-		
-		collector.on('end', collected => {
-			console.log(`Collected ${collected.size} items`);
-		});
-	}
-});
 
 client.login(token);
-
-
-	/**if (interaction.commandName === 'ping') {
-		const row = new MessageActionRow()
-			.addComponents(
-				new MessageButton()
-					.setCustomId('primary')
-					.setLabel('Primary')
-					.setStyle('PRIMARY'),
-				new MessageButton()
-					.setCustomId("Jungle")
-					.setLabel("Jungle")
-					.setStyle('PRIMARY'),
-				new MessageButton()
-					.setCustomId("Mid")
-					.setLabel("Mid")
-					.setStyle('PRIMARY'),
-				new MessageButton()
-					.setCustomId("ADC")
-					.setLabel("ADC")
-					.setStyle('PRIMARY'),
-				new MessageButton()
-					.setCustomId("Support")
-					.setLabel("Support")
-					.setStyle('PRIMARY'),
-			);
-
-		await interaction.reply({ content: 'Pong!', components: [row] });
-	}*/ 
