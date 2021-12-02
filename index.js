@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { Client, Collection, Intents } = require('discord.js');
 const { token } = require('./config.json');
+const { MessageEmbed } = require('discord.js');
 
 // Create a new client instance
 const client = new Client({ 
@@ -29,9 +30,46 @@ for (const file of eventFiles) {
 const { MessageActionRow, MessageButton } = require('discord.js');
 
 client.on('interactionCreate', async interaction => {
-	if (!interaction.isCommand()) return;
+	if (!interaction.isCommand()) 
+		return;
 
-	if (interaction.commandName === 'ping') {
+	const { commandName } = interaction;
+	const exampleEmbed = new MessageEmbed().setTitle('Some title');
+	.setColor('#0099ff')
+	.setTitle('Some title')
+	.setURL('https://discord.js.org/')
+	.setAuthor('Some name', 'https://i.imgur.com/AfFp7pu.png', 'https://discord.js.org')
+	.setDescription('Some description here')
+	.setThumbnail('https://i.imgur.com/AfFp7pu.png')
+	.addFields(
+		{ name: 'Regular field title', value: 'Some value here' },
+		{ name: '\u200B', value: '\u200B' },
+		{ name: 'Inline field title', value: 'Some value here', inline: true },
+		{ name: 'Inline field title', value: 'Some value here', inline: true },
+	)
+
+	channel.send({ embeds: [exampleEmbed] });
+
+	if (interaction.commandName === 'startqueue') {
+		await interaction.reply("Type <role> <IGN> to be added to the queue.")
+		const filter = m => m.content.includes('discord');
+		const collector = interaction.channel.createMessageCollector({ time: 15000 });
+	
+		
+		collector.on('collect', m => {
+			console.log(`Collected ${m.content}`);
+		});
+		
+		collector.on('end', collected => {
+			console.log(`Collected ${collected.size} items`);
+		});
+	}
+});
+
+client.login(token);
+
+
+	/**if (interaction.commandName === 'ping') {
 		const row = new MessageActionRow()
 			.addComponents(
 				new MessageButton()
@@ -57,21 +95,4 @@ client.on('interactionCreate', async interaction => {
 			);
 
 		await interaction.reply({ content: 'Pong!', components: [row] });
-	} else if (interaction.commandName === 'startqueue') {
-		const filter = (reaction, user) => {
-			return reaction.emoji.name === '👍' && user.id === message.author.id;
-		};
-		
-		const collector = message.createReactionCollector({ filter, time: 15000 });
-		
-		collector.on('collect', (reaction, user) => {
-			console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
-		});
-		
-		collector.on('end', collected => {
-			console.log(`Collected ${collected.size} items`);
-		});
-	}
-});
-
-client.login(token);
+	}*/ 
